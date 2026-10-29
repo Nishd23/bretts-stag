@@ -5,7 +5,7 @@
 set -e
 cd "$(dirname "$0")"
 
-SITE_URL="https://nishd23.github.io/bretts-stag"
+SITE_URL="https://bretts-stag.vercel.app"
 
 rm -rf docs
 mkdir -p docs
