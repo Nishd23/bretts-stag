@@ -1,0 +1,521 @@
+<title>Brett's Stag Weekend</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800;900&family=Barlow:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: a scoreboard header for the Test, then the pub crawl drawn as a tram line with stops down the page. */
+:root {
+  --bg: #eef2ee;
+  --surface: #ffffff;
+  --ink: #142019;
+  --muted: #56655c;
+  --line: #cfd8d1;
+  --board: #0f3b2a;      /* MCG scoreboard green */
+  --board-ink: #f4f7f2;
+  --gold: #e0a526;       /* tram gold */
+  --gold-ink: #2a1d00;
+  --done: #2f7d4f;
+  --f-display: "Big Shoulders Display", "Arial Narrow", Impact, sans-serif;
+  --f-body: "Barlow", "Helvetica Neue", Arial, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d1511; --surface: #15201a; --ink: #e8efe9; --muted: #9aaba0; --line: #2a3a31;
+    --board: #0a2a1d; --board-ink: #eef4ef; --gold: #f0b93e; --gold-ink: #241800; --done: #5fbf83;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d1511; --surface: #15201a; --ink: #e8efe9; --muted: #9aaba0; --line: #2a3a31;
+  --board: #0a2a1d; --board-ink: #eef4ef; --gold: #f0b93e; --gold-ink: #241800; --done: #5fbf83;
+  color-scheme: dark;
+}
+/* The golf app's colour themes are applied by script as inline tokens; the scoreboard look above is the default. */
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 17px; line-height: 1.55; }
+a { color: inherit; }
+a:focus-visible, button:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+.wrap { max-width: 860px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+h1, h2, h3 { font-family: var(--f-display); text-wrap: balance; line-height: 1; margin: 0; letter-spacing: .01em; }
+.eyebrow { font-family: var(--f-mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+
+/* Hero / scoreboard */
+.hero { background-color: var(--board); color: var(--board-ink);
+  /* cricket: mown pitch stripes */
+  background-image: repeating-linear-gradient(90deg, transparent 0 70px, color-mix(in srgb, var(--board-ink) 4%, transparent) 70px 140px); }
+/* Theme picker: the golf app's colour themes */
+.look { display: grid; gap: 10px; }
+.look-toggle { justify-self: start; display: inline-flex; align-items: center; gap: 10px; font-family: var(--f-mono); font-size: 13px; font-weight: 600; cursor: pointer; padding: 8px 14px; background: transparent; color: var(--board-ink); border: 1px solid color-mix(in srgb, var(--board-ink) 35%, transparent); }
+.look-toggle .lbl { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; opacity: .75; }
+.dots { display: inline-flex; gap: 3px; }
+.dots i { width: 12px; height: 12px; border-radius: 50%; border: 1px solid rgba(0,0,0,.15); }
+.look-panel { background: var(--surface); color: var(--ink); border: 1px solid var(--line); padding: 10px; max-height: 320px; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 6px; }
+.look-panel button { display: grid; gap: 6px; text-align: left; font-family: var(--f-body); font-size: 14px; font-weight: 600; color: inherit; background: transparent; border: 1px solid var(--line); padding: 8px 10px; cursor: pointer; }
+.look-panel button:hover { border-color: var(--ink); }
+.look-panel button[aria-checked="true"] { border: 2px solid var(--ink); padding: 7px 9px; }
+.hero .wrap { padding-block: 40px 36px; display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 32px; align-items: center; }
+.hero-text { display: grid; gap: 24px; min-width: 0; }
+@media (max-width: 720px) { .hero .wrap { grid-template-columns: 1fr; } .player { max-width: 300px; } }
+
+/* Player card poster */
+.player { margin: 0; background: #f8f8f4; color: #142019; padding: 10px 10px 14px; transform: rotate(1.5deg); box-shadow: 0 14px 30px rgba(0,0,0,.35); }
+.player .photo { position: relative; aspect-ratio: 352 / 470; max-width: 100%; overflow: hidden; background: var(--board); }
+.player img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 0; }
+.player .photo::after { content: ""; position: absolute; inset: 0 auto 0 0; width: 14%; background: linear-gradient(90deg, var(--board) 30%, transparent); }
+.player .badge { position: absolute; top: 10px; right: 10px; z-index: 1; background: var(--gold); color: var(--gold-ink); font-family: var(--f-mono); font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; padding: 4px 8px; }
+.player figcaption { display: grid; gap: 8px; padding: 12px 4px 0; }
+.player .pname { font-family: var(--f-display); font-weight: 900; font-size: 40px; text-transform: uppercase; line-height: .9; }
+.player dl { grid-template-columns: auto 1fr; gap: 3px 12px; font-size: 14px; }
+.player dt { color: #56655c; font-size: 10px; }
+.hero .eyebrow { color: color-mix(in srgb, var(--board-ink) 70%, transparent); }
+.hero h1 { font-size: clamp(48px, 11vw, 104px); font-weight: 900; text-transform: uppercase; }
+.hero h1 span { color: var(--gold); }
+.hero p { margin: 0; max-width: 56ch; color: color-mix(in srgb, var(--board-ink) 85%, transparent); }
+.count { display: flex; flex-wrap: wrap; gap: 8px; }
+.count div { background: color-mix(in srgb, var(--board-ink) 8%, var(--board)); border: 1px solid color-mix(in srgb, var(--board-ink) 18%, transparent); padding: 10px 14px 8px; min-width: 84px; text-align: center; }
+.count b { display: block; font-family: var(--f-mono); font-size: 34px; font-weight: 600; color: var(--gold); font-variant-numeric: tabular-nums; line-height: 1.1; }
+.count small { font-family: var(--f-mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; opacity: .75; }
+.jump { display: flex; flex-wrap: wrap; gap: 10px; }
+.jump a { font-family: var(--f-mono); font-size: 13px; text-decoration: none; padding: 8px 14px; border: 1px solid color-mix(in srgb, var(--board-ink) 35%, transparent); }
+.jump a:hover { background: var(--gold); color: var(--gold-ink); border-color: var(--gold); }
+
+section { padding-block: 48px 8px; }
+.dayhead { display: grid; gap: 6px; margin-bottom: 22px; }
+.dayhead h2 { font-size: clamp(38px, 8vw, 60px); font-weight: 800; text-transform: uppercase; }
+
+/* Day 1 card */
+.test { background: var(--surface); border: 1px solid var(--line); display: grid; grid-template-columns: 1fr 1fr; }
+.test > div { padding: 22px; min-width: 0; }
+.test > div + div { border-left: 1px solid var(--line); }
+.teams { font-family: var(--f-display); font-size: 34px; font-weight: 800; text-transform: uppercase; line-height: 1.05; }
+.teams em { font-style: normal; color: var(--muted); font-size: 20px; padding-inline: 4px; }
+dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 8px 16px; }
+dt { font-family: var(--f-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); padding-top: 3px; }
+dd { margin: 0; }
+.note { font-size: 15px; color: var(--muted); margin: 14px 0 0; }
+@media (max-width: 640px) { .test { grid-template-columns: 1fr; } .test > div + div { border-left: 0; border-top: 1px solid var(--line); } }
+
+/* Day 2 tram line */
+.progress { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; font-family: var(--f-mono); font-size: 13px; color: var(--muted); }
+.progress .bar { flex: 1 1 180px; height: 8px; background: var(--line); position: relative; overflow: hidden; }
+.progress .bar i { position: absolute; inset: 0 auto 0 0; width: 0; background: var(--gold); transition: width .3s; }
+.progress button { font: inherit; background: none; border: 1px solid var(--line); color: var(--muted); padding: 4px 10px; cursor: pointer; }
+ol.route { list-style: none; margin: 0; padding: 0; position: relative; }
+ol.route::before { content: ""; position: absolute; left: 21px; top: 22px; bottom: 22px; width: 6px; background: var(--gold); }
+.stop { position: relative; display: grid; grid-template-columns: 48px 1fr; gap: 16px; padding-bottom: 18px; }
+.dot { position: relative; z-index: 1; width: 48px; height: 48px; border-radius: 50%; background: var(--surface); border: 5px solid var(--gold); display: grid; place-items: center; font-family: var(--f-mono); font-weight: 600; font-size: 15px; color: var(--ink); cursor: pointer; padding: 0; }
+.stop.done .dot { background: var(--done); border-color: var(--done); color: #fff; }
+.card { background: var(--surface); border: 1px solid var(--line); padding: 16px 18px; min-width: 0; }
+.stop.done .card { opacity: .62; }
+.card header { display: flex; justify-content: space-between; align-items: baseline; gap: 6px 14px; flex-wrap: wrap; }
+.card h3 { font-size: 30px; font-weight: 800; text-transform: uppercase; }
+.time { font-family: var(--f-mono); font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.booked .time { background: var(--gold); color: var(--gold-ink); padding: 2px 8px; }
+.addr { font-size: 15px; color: var(--muted); margin: 4px 0 0; }
+.card p.desc { margin: 8px 0 0; max-width: 62ch; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px 14px; margin-top: 10px; font-family: var(--f-mono); font-size: 13px; }
+.actions a { text-decoration-color: var(--gold); text-decoration-thickness: 2px; text-underline-offset: 3px; }
+.leg { margin: -6px 0 18px 64px; font-family: var(--f-mono); font-size: 12px; color: var(--muted); letter-spacing: .04em; }
+.stop.final .dot { background: var(--ink); border-color: var(--ink); color: var(--bg); }
+
+/* Dress code band */
+.dress { background: var(--board); color: var(--board-ink); padding: 20px 22px; margin-bottom: 26px; display: grid; grid-template-columns: auto 1fr; gap: 6px 22px; align-items: start; }
+.dress .tag { font-family: var(--f-display); font-weight: 900; font-size: 30px; text-transform: uppercase; color: var(--gold); line-height: 1; }
+.dress h3 { font-size: 30px; font-weight: 800; text-transform: uppercase; }
+.dress p { margin: 6px 0 0; max-width: 60ch; color: color-mix(in srgb, var(--board-ink) 85%, transparent); }
+.dress ul { margin: 10px 0 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 6px; }
+.dress li { font-family: var(--f-mono); font-size: 12px; padding: 4px 9px; border: 1px solid color-mix(in srgb, var(--board-ink) 30%, transparent); }
+@media (max-width: 560px) { .dress { grid-template-columns: 1fr; } }
+
+/* Base camp + Day 1 run sheet */
+.stay { background: var(--surface); border: 1px solid var(--line); padding: 18px 22px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px 24px; align-items: center; }
+.stay h3 { font-size: 30px; font-weight: 800; text-transform: uppercase; }
+.stay .addr { margin: 4px 0 0; }
+.stay .dates { font-family: var(--f-mono); font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.runsheet { list-style: none; margin: 0 0 18px; padding: 0; border: 1px solid var(--line); background: var(--surface); }
+.runsheet li { display: grid; grid-template-columns: 110px 1fr; gap: 16px; padding: 14px 22px; align-items: baseline; }
+.runsheet li + li { border-top: 1px solid var(--line); }
+.runsheet .time { font-family: var(--f-mono); font-size: 14px; font-weight: 600; }
+.runsheet strong { font-family: var(--f-display); font-size: 24px; font-weight: 800; text-transform: uppercase; }
+.runsheet p { margin: 2px 0 0; color: var(--muted); font-size: 15px; }
+.tbc { display: inline-block; font-family: var(--f-mono); font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; background: var(--gold); color: var(--gold-ink); padding: 2px 7px; }
+@media (max-width: 480px) { .runsheet li { grid-template-columns: 1fr; gap: 4px; } }
+
+/* Squad sheet */
+.squad { background: var(--surface); border: 1px solid var(--line); margin-block: 18px 26px; }
+.stay .desc { margin: 8px 0 0; }
+.squad .bench { padding: 12px 22px 16px; border-top: 1px solid var(--line); font-family: var(--f-display); font-size: 22px; font-weight: 700; text-transform: uppercase; color: var(--muted); }
+.squad .bench span { font-family: var(--f-mono); font-size: 11px; font-weight: 600; letter-spacing: .12em; margin-right: 10px; vertical-align: 3px; }
+.squad header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 6px 16px; padding: 16px 22px; border-bottom: 1px solid var(--line); }
+.squad h3 { font-size: 30px; font-weight: 800; text-transform: uppercase; }
+.squad .count-note { font-family: var(--f-mono); font-size: 13px; color: var(--muted); }
+.squad ul { list-style: none; margin: 0; padding: 8px 22px 16px; display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); column-gap: 24px; }
+.squad li { font-family: var(--f-display); font-size: 24px; font-weight: 700; text-transform: uppercase; padding: 8px 0; border-bottom: 1px dashed var(--line); display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.squad li small { font-family: var(--f-mono); font-size: 11px; font-weight: 600; letter-spacing: .1em; color: var(--gold-ink); background: var(--gold); padding: 2px 6px; }
+
+/* MCG photo */
+.ground { margin: 18px 0 0; }
+.ground img { display: block; width: 100%; max-width: 100%; aspect-ratio: 1920 / 676; object-fit: cover; background: var(--line); }
+.ground figcaption { font-size: 13px; color: var(--muted); margin-top: 6px; }
+.ground figcaption a { text-decoration-color: var(--gold); }
+
+/* Venue photos on stop cards */
+.venue-pic { margin: -16px -18px 14px; position: relative; }
+.venue-pic img { display: block; width: 100%; max-width: 100%; aspect-ratio: 16 / 7; object-fit: cover; background: var(--line); }
+.venue-pic figcaption { position: absolute; right: 0; bottom: 0; font-size: 11px; padding: 2px 8px; background: rgba(0,0,0,.55); color: #fff; }
+.venue-pic figcaption a { color: inherit; }
+
+/* Brett's innings scorecard */
+.scorecard { background: var(--board); color: var(--board-ink); border: 1px solid color-mix(in srgb, var(--board-ink) 18%, transparent); }
+.sc-scroll { overflow-x: auto; }
+.scorecard table { width: 100%; min-width: 480px; border-collapse: collapse; font-family: var(--f-mono); font-size: 14px; font-variant-numeric: tabular-nums; }
+.scorecard th, .scorecard td { padding: 10px 14px; text-align: right; white-space: nowrap; }
+.scorecard .l { text-align: left; }
+.scorecard th { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; font-weight: 600; opacity: .75; border-bottom: 1px solid color-mix(in srgb, var(--board-ink) 25%, transparent); }
+.scorecard .bat td { padding-block: 16px; }
+.scorecard .bat strong { font-family: var(--f-display); font-size: 26px; font-weight: 800; text-transform: uppercase; letter-spacing: .02em; }
+.scorecard .bat small { opacity: .75; }
+.scorecard .big { font-size: 26px; font-weight: 600; color: var(--gold); }
+.scorecard tfoot td { border-top: 1px solid color-mix(in srgb, var(--board-ink) 15%, transparent); }
+.scorecard .total td { font-weight: 600; }
+.sc-notes { margin: 0; padding: 12px 14px 16px; font-size: 14px; border-top: 1px solid color-mix(in srgb, var(--board-ink) 25%, transparent); color: color-mix(in srgb, var(--board-ink) 85%, transparent); }
+.sc-notes span { font-family: var(--f-mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); margin-right: 8px; }
+
+footer { padding-block: 36px 48px; color: var(--muted); font-size: 14px; }
+footer .wrap { display: grid; gap: 6px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<header class="hero">
+  <div class="wrap">
+   <div class="hero-text">
+    <div class="eyebrow">Brett's stag · Melbourne · 26–27 Dec 2026</div>
+    <h1>Brett's last <span id="h1-word">innings</span></h1>
+    <p>Day one at the MCG for the Boxing Day Test. Day two is bowls in Brunswick, a crawl through Fitzroy, and a finish at the casino.</p>
+    <div class="count" id="count" aria-label="Countdown to first ball">
+      <div><b id="cd-d">--</b><small>Days</small></div>
+      <div><b id="cd-h">--</b><small>Hrs</small></div>
+      <div><b id="cd-m">--</b><small>Mins</small></div>
+    </div>
+    <nav class="jump">
+      <a href="#test">Day 1 · The Test</a>
+      <a href="#crawl">Day 2 · The Crawl</a>
+    </nav>
+    <div class="look">
+      <button type="button" class="look-toggle" id="look-toggle" aria-expanded="false" aria-controls="look-panel">
+        <span class="lbl">Colours</span> <span class="dots" id="look-dots"></span> <span id="look-name">Scoreboard</span> ▾
+      </button>
+      <div class="look-panel" id="look-panel" role="radiogroup" aria-label="Site colours" hidden></div>
+    </div>
+   </div>
+    <figure class="player">
+      <div class="photo">
+        <span class="badge">The Stag</span>
+        <img src="img/brett.jpg" alt="Brett giving a thumbs up">
+      </div>
+      <figcaption>
+        <div class="pname">Brett</div>
+        <dl>
+          <dt>Role</dt><dd>Captain, final tour</dd>
+          <dt>Bats</dt><dd>Right-handed, thumbs up</dd>
+          <dt>Bowls</dt><dd>Right-arm saucers</dd>
+          <dt>Status</dt><dd>Retiring from the single life</dd>
+        </dl>
+      </figcaption>
+    </figure>
+  </div>
+</header>
+
+<main>
+  <section id="innings">
+    <div class="wrap">
+      <div class="dayhead">
+        <div class="eyebrow">Scorecard · The Single Life · 1st innings</div>
+      </div>
+      <div class="scorecard">
+        <div class="sc-scroll">
+          <table>
+            <thead>
+              <tr><th class="l">Batter</th><th class="l">Dismissal</th><th>R</th><th>B</th><th>4s</th><th>6s</th><th>SR</th></tr>
+            </thead>
+            <tbody>
+              <tr class="bat"><td class="l"><strong>Brett</strong> <small>(c)</small></td><td class="l">c &amp; b ZOeeh</td><td class="big">5</td><td>26</td><td>0</td><td>0</td><td>19.23</td></tr>
+            </tbody>
+            <tfoot>
+              <tr><td class="l">Extras</td><td class="l"></td><td>0</td><td colspan="4"></td></tr>
+              <tr class="total"><td class="l">Total</td><td class="l">all out, 31 years</td><td class="big">5</td><td colspan="4"></td></tr>
+            </tfoot>
+          </table>
+        </div>
+        <p class="sc-notes"><span>Fall of wicket</span> 1-5 (Brett). Faced 26 years as a single man, then scored 5 in a relationship before ZOeeh held a return catch.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="stay">
+    <div class="wrap">
+      <div class="dayhead">
+        <div class="eyebrow">Base camp · Brett &amp; the slip cordon</div>
+      </div>
+      <div class="stay">
+        <div>
+          <h3>Little Drifter</h3>
+          <p class="addr">167 Franklin St, Melbourne VIC 3000 · near Queen Victoria Market and Melbourne Central</p>
+          <p class="desc">Staying: Brett, Nish, Moo, Skilly and Willsy. Everyone else is staying at home.</p>
+          <div class="actions"><a href="https://www.google.com/maps/search/?api=1&query=Little+Drifter%2C+167+Franklin+St%2C+Melbourne+VIC+3000" target="_blank" rel="noopener">Open in Maps</a></div>
+        </div>
+        <div class="dates">Sat 26 → Mon 28 Dec</div>
+      </div>
+    </div>
+  </section>
+
+
+  <section id="test">
+    <div class="wrap">
+      <div class="dayhead">
+        <div class="eyebrow">Day 1 · Saturday 26 December</div>
+        <h2>Boxing Day Test</h2>
+      </div>
+      <ol class="runsheet">
+        <li>
+          <span class="time"><span class="tbc">TBC</span></span>
+          <div><strong>Breakfast</strong><p>Cafe near the MCG. Venue and time to be confirmed.</p></div>
+        </li>
+        <li>
+          <span class="time">10:30am</span>
+          <div><strong>First ball</strong><p>Walk over to the MCG and head in for day 1.</p></div>
+        </li>
+      </ol>
+      <div class="test">
+        <div>
+          <div class="teams">Australia <em>v</em> New Zealand</div>
+          <p class="note">Third Test of the four-match trans-Tasman series. Day 1 of 5.</p>
+        </div>
+        <div>
+          <dl>
+            <dt>Venue</dt><dd>Melbourne Cricket Ground, Brunswick St, East Melbourne VIC 3002</dd>
+            <dt>First ball</dt><dd>10:30am AEDT (check your ticket)</dd>
+            <dt>Getting there</dt><dd>Train to Jolimont or Richmond, or tram 70/75 to the MCG stops</dd>
+          </dl>
+          <div class="actions"><a href="https://www.google.com/maps/search/?api=1&query=Melbourne+Cricket+Ground" target="_blank" rel="noopener">Open in Maps</a><a href="https://www.mcg.org.au" target="_blank" rel="noopener">Website</a></div>
+        </div>
+      </div>
+      <figure class="ground">
+        <img src="img/mcg.jpg" alt="Panorama of a packed MCG during the 2024 Boxing Day Test" loading="lazy">
+        <figcaption>The MCG on Boxing Day 2024. Photo: <a href="https://commons.wikimedia.org/wiki/File:Boxing_Day_Test_2024_panorama_full.jpg" target="_blank" rel="noopener">Electricmaster</a>, CC BY-SA 4.0, via Wikimedia Commons</figcaption>
+      </figure>
+      <div class="squad">
+        <header>
+          <h3>Day 1 XI</h3>
+          <span class="count-note">13 confirmed · 10 playing, 3 waterboys</span>
+        </header>
+        <ul>
+          <li>Brett <small>C</small></li>
+          <li>ZOeeh</li>
+          <li>D-Nice</li>
+          <li>CJ</li>
+          <li>Louis</li>
+          <li>Reece</li>
+          <li>Kez</li>
+          <li>ODub</li>
+          <li>Willsy</li>
+          <li>Teesh</li>
+          <li>Nish <small>Waterboy</small></li>
+          <li>Skilly <small>Waterboy</small></li>
+          <li>Moo <small>Waterboy</small></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="crawl">
+    <div class="wrap">
+      <div class="dayhead">
+        <div class="eyebrow">Day 2 · Sunday 27 December</div>
+        <h2>Brunswick → Fitzroy → Crown</h2>
+      </div>
+      <div class="dress">
+        <div class="tag">Dress<br>code</div>
+        <div>
+          <h3>Golf &amp; cricket attire</h3>
+          <p>Day 2 only. Turn up at the Bowls Club dressed for the fairway or the crease, and stay in it all day. Day 1 at the MCG is normal clothes.</p>
+          <ul>
+            <li>Cricket whites</li><li>Cable-knit sweater vests</li><li>Argyle</li><li>Loud golf polos</li><li>Plus fours</li><li>Visors &amp; bucket hats</li><li>Wide-brim sunhats</li><li>Zinc</li>
+          </ul>
+          <p>Flat soles or bare feet only on the bowling green. Leave the golf spikes and cricket boots at home.</p>
+        </div>
+      </div>
+      <div class="squad">
+        <header>
+          <h3>Day 2 XI</h3>
+          <span class="count-note">10 confirmed</span>
+        </header>
+        <ul>
+          <li>Brett <small>C</small></li>
+          <li>Nish</li>
+          <li>Moo</li>
+          <li>Louis</li>
+          <li>Skilly</li>
+          <li>Kez</li>
+          <li>ODub</li>
+          <li>Willsy</li>
+          <li>Teesh</li>
+          <li>CJ</li>
+        </ul>
+      </div>
+      <div class="progress">
+        <span id="prog-label">0 of 9 stops</span>
+        <div class="bar"><i id="prog-bar"></i></div>
+        <button type="button" id="reset">Reset</button>
+      </div>
+      <p class="note" style="margin:0 0 22px">Tap a stop number to tick it off on your phone. Times after 2pm are a suggested pace, roughly an hour a pub, leaving Fitzroy about 7pm for karaoke at 7:30pm. It's a Sunday, so some venues close earlier than usual.</p>
+
+      <ol class="route" id="route"></ol>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div>Addresses and hours come from venue listings and may change. Check Sunday trading before the day.</div>
+    <div>Drink water, look after each other, and keep the stag upright.</div>
+  </div>
+</footer>
+
+<script>
+const STOPS = [
+  { name: "Brunswick Bowls Club", img: "img/venues/bowls.jpg", credit: "Brunswick Bowling Club", creditUrl: "https://brunswickbowlingclub.com.au", web: "https://brunswickbowlingclub.com.au", time: "12:00–2:00pm", booked: true,
+    addr: "104–106 Victoria St, Brunswick East VIC 3057",
+    desc: "Booked. Barefoot bowls on one of Melbourne's oldest greens to start the day.",
+    leg: "Taxi or rideshare to Fitzroy · about 10 min" },
+  { name: "Punters Club", img: "img/venues/punters.jpg", credit: "Punters Club", creditUrl: "https://www.puntersclubfitzroy.com", web: "https://www.puntersclubfitzroy.com", time: "2:30pm",
+    addr: "376 Brunswick St, Fitzroy VIC 3065",
+    desc: "The old live-music institution, reopened in 2024 on the former Kewpie site.",
+    leg: "Walk south down Brunswick St to Johnston St" },
+  { name: "The Provincial", img: "img/venues/provincial.jpg", credit: "The Provincial Hotel", creditUrl: "https://provincialhotel.com.au", web: "https://provincialhotel.com.au", time: "3:30pm",
+    addr: "299 Brunswick St, Fitzroy VIC 3065",
+    desc: "On the Johnston St corner, with a rooftop bar.",
+    leg: "Walk south-east to Napier St" },
+  { name: "Napier Hotel", img: "img/venues/napier.jpg", credit: "Johntorcasio, CC BY-SA 4.0, Wikimedia Commons", creditUrl: "https://commons.wikimedia.org/wiki/File:The_Napier_Hotel.jpg", web: "https://thenapierhotel.com", time: "4:30pm",
+    addr: "210 Napier St, Fitzroy VIC 3065",
+    desc: "1916 corner pub, diagonally across from Fitzroy Town Hall.",
+    leg: "Walk south to Gertrude St" },
+  { name: "Builders Arms Hotel", img: "img/venues/builders.jpg", credit: "Builders Arms Hotel", creditUrl: "https://buildersarmshotel.com.au", web: "https://buildersarmshotel.com.au", time: "5:30pm",
+    addr: "211 Gertrude St, Fitzroy VIC 3065",
+    desc: "Trading since the 1850s, on the corner of Gertrude and Gore streets.",
+    leg: "A few doors along Gertrude St" },
+  { name: "Fitzroy Beer Garden", img: "img/venues/beergarden.jpg", credit: "The Fitzroy Beer Garden", creditUrl: "https://www.thefbg.com.au", web: "https://www.thefbg.com.au", time: "6:30pm",
+    addr: "243–245 Gertrude St, Fitzroy VIC 3065",
+    desc: "Leafy garden out the back. Sunday close has been listed as 10pm.",
+    leg: "Taxi or rideshare into the CBD" },
+  { name: "Karaoke Upstairs", time: "7:30pm",
+    addr: "Melbourne CBD · address TBC",
+    desc: "Warm up the vocal cords. Brett opens the batting on the mic.",
+    leg: "Taxi or rideshare to Southbank" },
+  { name: "Crown Casino", img: "img/venues/crown.jpg", credit: "John Torcasio, CC BY-SA 4.0, Wikimedia Commons", creditUrl: "https://commons.wikimedia.org/wiki/File:Crown_Casino_Towers.jpg", web: "https://www.crownmelbourne.com.au", time: "9:30pm →", final: true,
+    addr: "8 Whiteman St, Southbank VIC 3006",
+    desc: "The last stop. Set a limit before you walk in.",
+    leg: "" }
+];
+
+const route = document.getElementById("route");
+const KEY = "stag-crawl-done";
+let done = [];
+try { done = JSON.parse(localStorage.getItem(KEY) || "[]"); } catch (e) { done = []; }
+
+function mapUrl(s) { return "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(s.name + ", " + s.addr); }
+
+function render() {
+  route.innerHTML = "";
+  STOPS.forEach((s, i) => {
+    const li = document.createElement("li");
+    li.className = "stop" + (s.booked ? " booked" : "") + (s.final ? " final" : "") + (done.includes(i) ? " done" : "");
+    li.innerHTML = `
+      <button class="dot" type="button" id="stop-${i}" aria-pressed="${done.includes(i)}" aria-label="Mark ${s.name} as visited">${done.includes(i) ? "✓" : i + 1}</button>
+      <div class="card">
+        ${s.img ? `<figure class="venue-pic"><img src="${s.img}" alt="${s.name}" loading="lazy"><figcaption>Photo: <a href="${s.creditUrl}" target="_blank" rel="noopener">${s.credit}</a></figcaption></figure>` : ""}
+        <header><h3>${s.name}</h3><span class="time">${s.time}</span></header>
+        <p class="addr">${s.addr}</p>
+        <p class="desc">${s.desc}</p>
+        <div class="actions"><a href="${mapUrl(s)}" target="_blank" rel="noopener">Open in Maps</a>${s.web ? `<a href="${s.web}" target="_blank" rel="noopener">${s.webLabel || "Website"}</a>` : ""}</div>
+      </div>`;
+    route.appendChild(li);
+    if (s.leg) {
+      const leg = document.createElement("li");
+      leg.className = "leg";
+      leg.textContent = s.leg;
+      route.appendChild(leg);
+    }
+  });
+  document.getElementById("prog-label").textContent = `${done.length} of ${STOPS.length} stops`;
+  document.getElementById("prog-bar").style.width = (done.length / STOPS.length * 100) + "%";
+}
+
+route.addEventListener("click", e => {
+  const btn = e.target.closest(".dot");
+  if (!btn) return;
+  const i = Number(btn.id.split("-")[1]);
+  done = done.includes(i) ? done.filter(x => x !== i) : [...done, i];
+  try { localStorage.setItem(KEY, JSON.stringify(done)); } catch (e) {}
+  render();
+  document.getElementById("stop-" + i).focus();
+});
+document.getElementById("reset").addEventListener("click", () => {
+  done = [];
+  try { localStorage.removeItem(KEY); } catch (e) {}
+  render();
+});
+render();
+
+// First ball: 26 Dec 2026, 10:30am AEDT (UTC+11)
+const FIRST_BALL = Date.UTC(2026, 11, 25, 23, 30);
+function tick() {
+  let ms = Math.max(0, FIRST_BALL - Date.now());
+  const d = Math.floor(ms / 864e5); ms -= d * 864e5;
+  const h = Math.floor(ms / 36e5); ms -= h * 36e5;
+  const m = Math.floor(ms / 6e4);
+  document.getElementById("cd-d").textContent = d;
+  document.getElementById("cd-h").textContent = String(h).padStart(2, "0");
+  document.getElementById("cd-m").textContent = String(m).padStart(2, "0");
+}
+tick(); setInterval(tick, 30000);
+
+// Colour themes from the golf app (Balls Deep), remembered per viewer.
+// "Scoreboard" is the site's own green-and-gold look and follows light/dark mode.
+const APP_THEMES = [{"id":"classic-blue","name":"Classic blue","sw":["#202D4D","#7CB4D5","#DCEBF5","#FFFFFF"],"v":{"bg":"#F4F7FA","surface":"#FFFFFF","ink":"#15233F","muted":"#6A7486","line":"#CFE3F2","board":"#202D4D","board-ink":"#FFFFFF","gold":"#7CB4D5","gold-ink":"#15233F","done":"#1F3B66"}},{"id":"alchemical-reaction","name":"Alchemical reaction","sw":["#9D00FF","#DE811D","#6BFF00","#5B8040"],"v":{"bg":"#D3FFB3","surface":"#FFFFFF","ink":"#61009E","muted":"#8C61A6","line":"#8AFF36","board":"#DE811D","board-ink":"#490077","gold":"#61009E","gold-ink":"#FFFFFF","done":"#9D00FF"}},{"id":"blooming-romance","name":"Blooming romance","sw":["#660033","#E673AC","#469110","#00520A"],"v":{"bg":"#F8D5E6","surface":"#FFFFFF","ink":"#420021","muted":"#87516C","line":"#EB90BD","board":"#469110","board-ink":"#320019","gold":"#660033","gold-ink":"#FFFFFF","done":"#660033"}},{"id":"blue-eclipse","name":"Blue eclipse","sw":["#272757","#8686AC","#505081","#0F0E47"],"v":{"bg":"#DBDBE6","surface":"#FFFFFF","ink":"#0A092E","muted":"#595974","line":"#A0A0BD","board":"#505081","board-ink":"#FFFFFF","gold":"#B0B0C9","gold-ink":"#0A092E","done":"#0F0E47"}},{"id":"bubblegum-pop","name":"Bubblegum pop","sw":["#FF69B4","#069494","#FFFFFF","#00F0FF"],"v":{"bg":"#FFFFFF","surface":"#FFFFFF","ink":"#034A4A","muted":"#638F8F","line":"#FFFFFF","board":"#00F0FF","board-ink":"#034A4A","gold":"#068989","gold-ink":"#FFFFFF","done":"#057E7E"}},{"id":"burnt-sienna","name":"Burnt sienna","sw":["#E35336","#F5F5DC","#F4A460","#A0522D"],"v":{"bg":"#FCFCF5","surface":"#FFFFFF","ink":"#63321C","muted":"#9D7F6E","line":"#F7F7E4","board":"#F4A460","board-ink":"#63321C","gold":"#63321C","gold-ink":"#FFFFFF","done":"#A0522D"}},{"id":"cactus-flower","name":"Cactus flower","sw":["#E491A6","#845763","#92E4BA","#90C67F"],"v":{"bg":"#DEF7EA","surface":"#FFFFFF","ink":"#563940","muted":"#8A8181","line":"#A9EAC8","board":"#90C67F","board-ink":"#563940","gold":"#563940","gold-ink":"#FFFFFF","done":"#845763"}},{"id":"california-beaches","name":"California beaches","sw":["#FFC067","#66F4FF","#66C4FF","#7D99AA"],"v":{"bg":"#D1FCFF","surface":"#FFFFFF","ink":"#37434B","muted":"#72898F","line":"#86F6FF","board":"#FFC067","board-ink":"#37434B","gold":"#596D7A","gold-ink":"#FFFFFF","done":"#596D7A"}},{"id":"cappuccino","name":"Cappuccino","sw":["#D6B588","#C6C0B9","#705E46","#422701"],"v":{"bg":"#EEECEA","surface":"#FFFFFF","ink":"#2B1901","muted":"#75695A","line":"#D2CDC8","board":"#D6B588","board-ink":"#2B1901","gold":"#705E46","gold-ink":"#FFFFFF","done":"#422701"}},{"id":"seaside","name":"Charming seaside","sw":["#B3EBF2","#85D1DB","#B6F2D1","#C9FDF2"],"v":{"bg":"#F0FEFB","surface":"#FFFFFF","ink":"#0F3E46","muted":"#65878B","line":"#C7F6DE","board":"#B3EBF2","board-ink":"#0F3E46","gold":"#2B8A98","gold-ink":"#FFFFFF","done":"#1D6874"}},{"id":"cherry-blossom","name":"Cherry blossom","sw":["#F2C7C7","#FFFFFF","#D5F3D8","#FFB7C5"],"v":{"bg":"#FFFFFF","surface":"#FFFFFF","ink":"#523B3F","muted":"#948588","line":"#FFFFFF","board":"#D5F3D8","board-ink":"#523B3F","gold":"#8C656C","gold-ink":"#FFFFFF","done":"#8C656C"}},{"id":"chili-spice","name":"Chili spice","sw":["#CD1C18","#FFA896","#9B1313","#38000A"],"v":{"bg":"#FFE5E0","surface":"#FFFFFF","ink":"#240007","muted":"#775759","line":"#FFBAAC","board":"#CD1C18","board-ink":"#FFFFFF","gold":"#38000A","gold-ink":"#FFFFFF","done":"#38000A"}},{"id":"chocolate-truffle","name":"Chocolate truffle","sw":["#713600","#C05800","#FDFBD4","#38240D"],"v":{"bg":"#FEFEF2","surface":"#FFFFFF","ink":"#241708","muted":"#776F61","line":"#FDFCDD","board":"#C05800","board-ink":"#020100","gold":"#38240D","gold-ink":"#FFFFFF","done":"#38240D"}},{"id":"classic","name":"Classic green","sw":["#166534","#16a34a","#d1fae0","#ffffff"],"v":{"bg":"#f9fafb","surface":"#FFFFFF","ink":"#0b3d20","muted":"#658573","line":"#CEF8DD","board":"#ffffff","board-ink":"#166534","gold":"#16a34a","gold-ink":"#0b3d20","done":"#166534"}},{"id":"cool-revival","name":"Cool revival","sw":["#00FFFF","#00AEFF","#00DE94","#00FF52"],"v":{"bg":"#B3FFFF","surface":"#FFFFFF","ink":"#004464","muted":"#448B9F","line":"#36FFFF","board":"#00FF52","board-ink":"#004464","gold":"#006EA1","gold-ink":"#FFFFFF","done":"#006EA1"}},{"id":"cotton-candy-skies","name":"Cotton candy skies","sw":["#B298E7","#B8E3E9","#F5B8D5","#F9BEDD"],"v":{"bg":"#EAF7F8","surface":"#FFFFFF","ink":"#453B5A","muted":"#848296","line":"#C7E9EE","board":"#F9BEDD","board-ink":"#453B5A","gold":"#77659A","gold-ink":"#FFFFFF","done":"#77659A"}},{"id":"country-garden","name":"Country garden","sw":["#FFFFE3","#DBD4FF","#808034","#723480"],"v":{"bg":"#FFFFF7","surface":"#FFFFFF","ink":"#4A2253","muted":"#8F7691","line":"#FFFFE9","board":"#DBD4FF","board-ink":"#4A2253","gold":"#723480","gold-ink":"#FFFFFF","done":"#723480"}},{"id":"desert-dusk","name":"Desert dusk","sw":["#A2574F","#E68057","#BF7587","#993A8B"],"v":{"bg":"#F8D9CD","surface":"#FFFFFF","ink":"#63265A","muted":"#9C6A86","line":"#EB9B7A","board":"#BF7587","board-ink":"#361532","gold":"#63265A","gold-ink":"#FFFFFF","done":"#993A8B"}},{"id":"electric-fusion","name":"Electric fusion","sw":["#00F0FF","#00FF81","#FFA900","#FF6800"],"v":{"bg":"#B3FFD9","surface":"#FFFFFF","ink":"#702E00","muted":"#897D52","line":"#36FF9B","board":"#00F0FF","board-ink":"#702E00","gold":"#B54A00","gold-ink":"#FFFFFF","done":"#B54A00"}},{"id":"electric-kiwi","name":"Electric kiwi","sw":["#CCFF00","#FFFF00","#DFFF00","#000000"],"v":{"bg":"#FFFFB3","surface":"#FFFFFF","ink":"#000000","muted":"#616144","line":"#FFFF36","board":"#DFFF00","board-ink":"#000000","gold":"#000000","gold-ink":"#FFFFFF","done":"#000000"}},{"id":"electropop","name":"Electropop","sw":["#CCFF00","#FF6B00","#F900FF","#5200FF"],"v":{"bg":"#F0FFB3","surface":"#FFFFFF","ink":"#3500A6","muted":"#7C61AB","line":"#D7FF36","board":"#FF6B00","board-ink":"#300095","gold":"#3500A6","gold-ink":"#FFFFFF","done":"#5200FF"}},{"id":"evening-rose","name":"Evening rose","sw":["#DCA1A1","#996666","#8E4585","#4A4A4A"],"v":{"bg":"#F5E3E3","surface":"#FFFFFF","ink":"#303030","muted":"#7B7474","line":"#E4B5B5","board":"#996666","board-ink":"#FFFFFF","gold":"#FFFFFF","gold-ink":"#303030","done":"#4A4A4A"}},{"id":"fireworks","name":"Fireworks","sw":["#ED2100","#E88A38","#960016","#BF00AC"],"v":{"bg":"#F8DCC3","surface":"#FFFFFF","ink":"#62000E","muted":"#9B5453","line":"#EDA362","board":"#ED2100","board-ink":"#180003","gold":"#62000E","gold-ink":"#FFFFFF","done":"#960016"}},{"id":"fresh-peach","name":"Fresh peach","sw":["#FFD3AC","#FFB5AB","#E39A7B","#DBB06B"],"v":{"bg":"#FFF2E6","surface":"#FFFFFF","ink":"#573B2F","muted":"#978175","line":"#FFDCBD","board":"#FFB5AB","board-ink":"#573B2F","gold":"#8D5F4C","gold-ink":"#FFFFFF","done":"#8D5F4C"}},{"id":"freshly-squeezed","name":"Freshly squeezed","sw":["#FFBF00","#F2CF7E","#FFE642","#FF7900"],"v":{"bg":"#FFF8C6","surface":"#FFFFFF","ink":"#683200","muted":"#A17D4B","line":"#FFEB6A","board":"#F2CF7E","board-ink":"#683200","gold":"#B35500","gold-ink":"#FFFFFF","done":"#B35500"}},{"id":"glowing-horizon","name":"Glowing horizon","sw":["#FFB343","#42EAFF","#4272FF","#FF7E42"],"v":{"bg":"#C6F9FF","surface":"#FFFFFF","ink":"#223D87","muted":"#6084B5","line":"#6AEFFF","board":"#FFB343","board-ink":"#223D87","gold":"#223D87","gold-ink":"#FFFFFF","done":"#3862DB"}},{"id":"golden-hour","name":"Golden hour","sw":["#FFBF00","#CFB53B","#E0B0FF","#ECEBC8"],"v":{"bg":"#F9F9EF","surface":"#FFFFFF","ink":"#494015","muted":"#8C8668","line":"#F0EFD4","board":"#FFBF00","board-ink":"#494015","gold":"#7C6D23","gold-ink":"#FFFFFF","done":"#7C6D23"}},{"id":"golden-taupe","name":"Golden taupe","sw":["#D4AF37","#BDB76B","#FDFBD4","#CE8946"],"v":{"bg":"#FEFEF2","surface":"#FFFFFF","ink":"#56391D","muted":"#96846E","line":"#FDFCDD","board":"#BDB76B","board-ink":"#56391D","gold":"#56391D","gold-ink":"#FFFFFF","done":"#9B6735"}},{"id":"green-juice","name":"Green juice","sw":["#4CBB17","#48872B","#39542C","#293325"],"v":{"bg":"#C9EBB9","surface":"#FFFFFF","ink":"#1B2118","muted":"#5D6E55","line":"#72C948","board":"#48872B","board-ink":"#040504","gold":"#1B2118","gold-ink":"#FFFFFF","done":"#293325"}},{"id":"guava","name":"Guava","sw":["#FF8559","#FFB578","#E65447","#CF5376"],"v":{"bg":"#FFE9D7","surface":"#FFFFFF","ink":"#6D2C3E","muted":"#A47478","line":"#FFC595","board":"#FF8559","board-ink":"#622838","gold":"#6D2C3E","gold-ink":"#FFFFFF","done":"#A7445F"}},{"id":"hydrangea","name":"Hydrangea","sw":["#FF8DA1","#FFC2BA","#FF9CE9","#AD56C4"],"v":{"bg":"#FFEDEA","surface":"#FFFFFF","ink":"#5B2E68","muted":"#997799","line":"#FFCFC8","board":"#FF9CE9","board-ink":"#5B2E68","gold":"#5B2E68","gold-ink":"#FFFFFF","done":"#944AA7"}},{"id":"ink-wash","name":"Ink wash","sw":["#4A4A4A","#CBCBCB","#FFFFE3","#6D8196"],"v":{"bg":"#FFFFF7","surface":"#FFFFFF","ink":"#303030","muted":"#7F7F7C","line":"#FFFFE9","board":"#CBCBCB","board-ink":"#303030","gold":"#4A4A4A","gold-ink":"#FFFFFF","done":"#4A4A4A"}},{"id":"iris-garden","name":"Iris garden","sw":["#A47DAB","#692475","#82AB7D","#6A6B4E"],"v":{"bg":"#DAE6D8","surface":"#FFFFFF","ink":"#44174C","muted":"#7D6681","line":"#9CBD98","board":"#A47DAB","board-ink":"#36123D","gold":"#44174C","gold-ink":"#FFFFFF","done":"#692475"}},{"id":"lavender-fields","name":"Lavender fields","sw":["#FDFBD4","#BDB96A","#C1BFFF","#CF6DFC"],"v":{"bg":"#FEFEF2","surface":"#FFFFFF","ink":"#5B306F","muted":"#997EA1","line":"#FDFCDD","board":"#C1BFFF","board-ink":"#5B306F","gold":"#5B306F","gold-ink":"#FFFFFF","done":"#9B52BD"}},{"id":"lotus-garden","name":"Lotus garden","sw":["#ADEBB3","#FF857A","#EBAEE6","#6B403C"],"v":{"bg":"#E6F9E8","surface":"#FFFFFF","ink":"#462A27","muted":"#837970","line":"#BEEFC3","board":"#EBAEE6","board-ink":"#462A27","gold":"#6B403C","gold-ink":"#FFFFFF","done":"#6B403C"}},{"id":"lush-forest","name":"Lush forest","sw":["#2E6F40","#CFFFDC","#68BA7F","#253D2C"],"v":{"bg":"#F1FFF5","surface":"#FFFFFF","ink":"#18281D","muted":"#6A7A6F","line":"#D9FFE4","board":"#68BA7F","board-ink":"#18281D","gold":"#253D2C","gold-ink":"#FFFFFF","done":"#253D2C"}},{"id":"mango-popsicle","name":"Mango popsicle","sw":["#F2B949","#FDD377","#F2E829","#F27430"],"v":{"bg":"#FBF8BF","surface":"#FFFFFF","ink":"#6A3315","muted":"#A17E56","line":"#F5ED56","board":"#FDD377","board-ink":"#6A3315","gold":"#AD5322","gold-ink":"#FFFFFF","done":"#AD5322"}},{"id":"mossy-hollow","name":"Mossy hollow","sw":["#636B2F","#BAC095","#D4DE95","#3D4127"],"v":{"bg":"#F2F5DF","surface":"#FFFFFF","ink":"#282A19","muted":"#757764","line":"#DDE5AB","board":"#BAC095","board-ink":"#282A19","gold":"#636B2F","gold-ink":"#FFFFFF","done":"#3D4127"}},{"id":"neon-jungle","name":"Neon jungle","sw":["#89F336","#38A711","#F23598","#A835F2"],"v":{"bg":"#DCFBC3","surface":"#FFFFFF","ink":"#5D1D87","muted":"#8D719E","line":"#A2F560","board":"#38A711","board-ink":"#3C1358","gold":"#5D1D87","gold-ink":"#FFFFFF","done":"#9730DA"}},{"id":"sands","name":"Night sands","sw":["#CBBD93","#FAE8B4","#80775C","#574A24"],"v":{"bg":"#FEF9EC","surface":"#FFFFFF","ink":"#3A3118","muted":"#847D69","line":"#FBEDC5","board":"#CBBD93","board-ink":"#3A3118","gold":"#6B6040","gold-ink":"#FFFFFF","done":"#574A24"}},{"id":"photograph","name":"Old photograph","sw":["#FDFBD4","#D9D7B6","#878672","#545333"],"v":{"bg":"#FEFDEB","surface":"#FFFFFF","ink":"#33321F","muted":"#807F6D","line":"#F4F3D3","board":"#D9D7B6","board-ink":"#33321F","gold":"#6B6A4A","gold-ink":"#FFFFFF","done":"#545333"}},{"id":"pistachio-dream","name":"Pistachio dream","sw":["#80EF80","#E3F0A3","#BADBA2","#42D674"],"v":{"bg":"#F7FBE3","surface":"#FFFFFF","ink":"#174B29","muted":"#6C8E70","line":"#E9F3B6","board":"#80EF80","board-ink":"#174B29","gold":"#288046","gold-ink":"#FFFFFF","done":"#288046"}},{"id":"luxury","name":"Quiet luxury","sw":["#F7E6CA","#E8D59E","#D9BBB0","#AD9C8E"],"v":{"bg":"#FCF6EC","surface":"#FFFFFF","ink":"#3F362F","muted":"#877F77","line":"#F4E5C6","board":"#F7E6CA","board-ink":"#3F362F","gold":"#8A7A6D","gold-ink":"#FFFFFF","done":"#6B5D52"}},{"id":"retro-sunset","name":"Retro sunset","sw":["#BE5103","#FFCE1B","#069494","#B7410E"],"v":{"bg":"#FFF0BB","surface":"#FFFFFF","ink":"#712809","muted":"#A7744D","line":"#FFD84B","board":"#069494","board-ink":"#331204","gold":"#FFFFFF","gold-ink":"#712809","done":"#B7410E"}},{"id":"sharp-edge","name":"Sharp edge","sw":["#898989","#D9D9D9","#FF4D4D","#4DFFBC"],"v":{"bg":"#CAFFEB","surface":"#FFFFFF","ink":"#414141","muted":"#758982","line":"#73FFCA","board":"#D9D9D9","board-ink":"#414141","gold":"#6E6E6E","gold-ink":"#FFFFFF","done":"#6E6E6E"}},{"id":"space-berries","name":"Space berries","sw":["#FD3DB5","#FFB8DC","#FB6A2C","#8C1946"],"v":{"bg":"#FFEAF5","surface":"#FFFFFF","ink":"#5B102E","muted":"#99637A","line":"#FFC7E4","board":"#FB6A2C","board-ink":"#5B102E","gold":"#8C1946","gold-ink":"#FFFFFF","done":"#8C1946"}},{"id":"spiced-chai","name":"Spiced chai","sw":["#FDFBD4","#D47E30","#8D5A2B","#825E34"],"v":{"bg":"#FEFEF2","surface":"#FFFFFF","ink":"#553D22","muted":"#958671","line":"#FDFCDD","board":"#D47E30","board-ink":"#372816","gold":"#553D22","gold-ink":"#FFFFFF","done":"#825E34"}},{"id":"stormy-morning","name":"Stormy morning","sw":["#6A89A7","#BDDDFC","#88BDF2","#384959"],"v":{"bg":"#EBF5FE","surface":"#FFFFFF","ink":"#242F3A","muted":"#707A84","line":"#CBE4FD","board":"#88BDF2","board-ink":"#242F3A","gold":"#384959","gold-ink":"#FFFFFF","done":"#384959"}},{"id":"sunny-day","name":"Sunny day","sw":["#FFBF00","#807040","#007EFF","#2400FF"],"v":{"bg":"#FFECB3","surface":"#FFFFFF","ink":"#1700A6","muted":"#6F5AAB","line":"#FFCD36","board":"#007EFF","board-ink":"#0D005B","gold":"#1700A6","gold-ink":"#FFFFFF","done":"#2400FF"}},{"id":"tuscan-sunset","name":"Tuscan sunset","sw":["#E35336","#FFD3AC","#9988A1","#8A2B0E"],"v":{"bg":"#FFF2E6","surface":"#FFFFFF","ink":"#5A1C09","muted":"#996D5D","line":"#FFDCBD","board":"#9988A1","board-ink":"#441507","gold":"#5A1C09","gold-ink":"#FFFFFF","done":"#8A2B0E"}},{"id":"watermelon-splash","name":"Watermelon splash","sw":["#FC6C85","#89F336","#4A4A4A","#ADEBB3"],"v":{"bg":"#E6F9E8","surface":"#FFFFFF","ink":"#303030","muted":"#757C76","line":"#BEEFC3","board":"#89F336","board-ink":"#303030","gold":"#4A4A4A","gold-ink":"#FFFFFF","done":"#4A4A4A"}},{"id":"wildflowers","name":"Wildflowers","sw":["#A8DCAB","#519755","#DBAAA7","#BE91BE"],"v":{"bg":"#E5F5E6","surface":"#FFFFFF","ink":"#264728","muted":"#6F8970","line":"#BAE4BD","board":"#DBAAA7","board-ink":"#264728","gold":"#264728","gold-ink":"#FFFFFF","done":"#3E7341"}},{"id":"yacht","name":"Yacht club","sw":["#F2F0EF","#BBBDBC","#245F73","#733E24"],"v":{"bg":"#F2F0EF","surface":"#FFFFFF","ink":"#173D4A","muted":"#6A8189","line":"#DEDFDE","board":"#245F73","board-ink":"#FFFFFF","gold":"#BBBDBC","gold-ink":"#173D4A","done":"#245F73"}},{"id":"lemon","name":"Zesty lemon","sw":["#FFFF66","#FFE566","#D6D58B","#B3B347"],"v":{"bg":"#FFFFE8","surface":"#FFFFFF","ink":"#3D3D12","muted":"#878763","line":"#FFFF8D","board":"#FFFF66","board-ink":"#3D3D12","gold":"#8A8A2E","gold-ink":"#FFFFFF","done":"#66661F"}}];
+const TOKENS = ["bg", "surface", "ink", "muted", "line", "board", "board-ink", "gold", "gold-ink", "done"];
+const SCOREBOARD = { id: "scoreboard", name: "Scoreboard", sw: ["#0f3b2a", "#e0a526", "#eef2ee", "#ffffff"] };
+const ALL_THEMES = [SCOREBOARD, ...APP_THEMES];
+const LOOK_KEY = "stag-colours";
+const panel = document.getElementById("look-panel");
+const toggle = document.getElementById("look-toggle");
+const dots = sw => sw.map(c => `<i style="background:${c}"></i>`).join("");
+
+panel.innerHTML = ALL_THEMES.map(t =>
+  `<button type="button" role="radio" aria-checked="false" data-id="${t.id}"><span>${t.name}</span><span class="dots">${dots(t.sw)}</span></button>`
+).join("");
+
+function applyTheme(id) {
+  const t = ALL_THEMES.find(x => x.id === id) || SCOREBOARD;
+  const root = document.documentElement.style;
+  TOKENS.forEach(k => t.v ? root.setProperty("--" + k, t.v[k]) : root.removeProperty("--" + k));
+  t.v ? root.setProperty("color-scheme", "light") : root.removeProperty("color-scheme");
+  document.getElementById("look-name").textContent = t.name;
+  document.getElementById("look-dots").innerHTML = dots(t.sw);
+  panel.querySelectorAll("button").forEach(b => b.setAttribute("aria-checked", String(b.dataset.id === t.id)));
+  try { localStorage.setItem(LOOK_KEY, t.id); } catch (e) {}
+}
+toggle.addEventListener("click", () => {
+  const open = panel.hidden;
+  panel.hidden = !open;
+  toggle.setAttribute("aria-expanded", String(open));
+});
+panel.addEventListener("click", e => {
+  const b = e.target.closest("button[data-id]");
+  if (b) applyTheme(b.dataset.id);
+});
+let savedTheme = "scoreboard";
+try { savedTheme = localStorage.getItem(LOOK_KEY) || "scoreboard"; } catch (e) {}
+applyTheme(savedTheme);
+</script>
