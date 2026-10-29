@@ -199,6 +199,37 @@ ol.route::before { content: ""; position: absolute; left: 21px; top: 22px; botto
 .sc-notes { margin: 0; padding: 12px 14px 16px; font-size: 14px; border-top: 1px solid color-mix(in srgb, var(--board-ink) 25%, transparent); color: color-mix(in srgb, var(--board-ink) 85%, transparent); }
 .sc-notes span { font-family: var(--f-mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); margin-right: 8px; }
 
+/* Putting contest */
+.green-wrap { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 16px; align-items: start; margin-top: 18px; }
+@media (max-width: 820px) { .green-wrap { grid-template-columns: 1fr; } }
+.green-stage { position: relative; border: 1px solid var(--line); background: #3f8a45; min-width: 0; }
+.green-stage canvas { display: block; width: 100%; height: auto; aspect-ratio: 5 / 3; max-width: 100%; touch-action: none; cursor: crosshair; }
+.green-hud { position: absolute; left: 10px; right: 10px; top: 8px; display: flex; flex-wrap: wrap; gap: 6px 14px; font-family: var(--f-mono); font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: #f4f7f4; text-shadow: 0 1px 2px rgba(0,0,0,.5); pointer-events: none; }
+.green-msg { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; padding: 16px; font-family: var(--f-display); font-weight: 900; font-size: clamp(28px, 5vw, 48px); text-transform: uppercase; color: #fff; text-shadow: 0 2px 10px rgba(0,0,0,.6); pointer-events: none; }
+.green-msg small { display: block; font-family: var(--f-body); font-size: 15px; font-weight: 600; text-transform: none; }
+.green-tools { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.putting-as { font-size: 15px; color: var(--muted); }
+.putting-as b { color: var(--ink); font-family: var(--f-display); font-size: 24px; font-weight: 800; text-transform: uppercase; margin-left: 4px; }
+.tool-btns { display: flex; gap: 8px; }
+.green-tools button { font-family: var(--f-mono); font-size: 13px; font-weight: 600; padding: 9px 12px; background: var(--surface); color: var(--ink); border: 1px solid var(--line); cursor: pointer; }
+.pick-overlay { position: absolute; inset: 0; display: grid; place-items: center; padding: 16px; background: rgba(8,20,12,.5); z-index: 2; }
+.pick-box { display: grid; gap: 10px; justify-items: center; text-align: center; width: min(340px, 100%); padding: 20px; background: var(--board); color: var(--board-ink); border: 2px solid var(--gold); }
+.pick-box .who-step { font-family: var(--f-display); font-size: clamp(26px, 5vw, 36px); font-weight: 900; text-transform: uppercase; color: var(--gold); line-height: 1; }
+.pick-box select { width: 100%; font-family: var(--f-body); font-size: 18px; font-weight: 600; padding: 12px 14px; background: var(--gold); color: var(--gold-ink); border: 0; cursor: pointer; }
+.pick-box small { font-size: 14px; opacity: .85; }
+.board { background: var(--surface); border: 1px solid var(--line); padding: 14px; display: grid; gap: 10px; }
+.board-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.board-head h3 { font-size: 26px; font-weight: 800; text-transform: uppercase; }
+.board-chip { font-family: var(--f-mono); font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; padding: 3px 8px; background: var(--gold); color: var(--gold-ink); }
+.board ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.board li { display: grid; grid-template-columns: 22px minmax(0,1fr) auto; align-items: center; gap: 10px; padding: 6px 6px; font-variant-numeric: tabular-nums; }
+.board li.me { background: color-mix(in srgb, var(--gold) 18%, transparent); }
+.board li .rk { color: var(--muted); font-family: var(--f-mono); font-size: 12px; text-align: right; }
+.board li .nm { font-family: var(--f-display); font-size: 20px; font-weight: 700; text-transform: uppercase; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.board li .ct { text-align: right; white-space: nowrap; font-family: var(--f-mono); font-size: 13px; color: var(--muted); }
+.board li .ct b { font-size: 18px; color: var(--ink); margin-right: 4px; }
+.board-note { margin: 0; color: var(--muted); font-size: 13px; }
+
 footer { padding-block: 36px 48px; color: var(--muted); font-size: 14px; }
 footer .wrap { display: grid; gap: 6px; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
@@ -219,6 +250,7 @@ footer .wrap { display: grid; gap: 6px; }
     <nav class="jump">
       <a href="#test">Day 1 · The Test</a>
       <a href="#crawl">Day 2 · The Crawl</a>
+      <a href="#putting">Putting contest</a>
     </nav>
     <div class="look">
       <button type="button" class="look-toggle" id="look-toggle" aria-expanded="false" aria-controls="look-panel">
@@ -392,6 +424,40 @@ footer .wrap { display: grid; gap: 6px; }
       <ol class="route" id="route"></ol>
     </div>
   </section>
+  <section id="putting">
+    <div class="wrap">
+      <div class="dayhead">
+        <div class="eyebrow">Practice green · while you wait for the 26th</div>
+        <h2>Putting contest</h2>
+        <p class="note" style="margin:0;max-width:62ch">Pick your name, then drag back from the ball and let go. The further you pull, the harder you hit it. Watch the break. Every holed putt goes on the board.</p>
+      </div>
+      <div class="green-wrap">
+        <div>
+          <div class="green-tools">
+            <span class="putting-as">Putting as <b id="putter-name">nobody yet</b></span>
+            <span class="tool-btns"><button type="button" id="change-putter">Change player</button><button type="button" id="new-hole">New hole</button></span>
+          </div>
+          <div class="green-stage">
+            <canvas id="green" width="900" height="540" aria-label="Putting green. Drag back from the ball to aim and set power, then release."></canvas>
+            <div class="green-hud"><span id="hud-hole">Hole 1</span><span id="hud-break">Break: straight</span><span id="hud-putts">Putts this hole: 0</span></div>
+            <div class="green-msg" id="green-msg"></div>
+            <div class="pick-overlay" id="pick-overlay">
+              <div class="pick-box">
+                <label class="who-step" for="putter">Who's putting?</label>
+                <select id="putter"></select>
+                <small>Pick your name, then drag back from the ball and let go.</small>
+              </div>
+            </div>
+          </div>
+        </div>
+        <aside class="board" aria-live="polite">
+          <div class="board-head"><h3>Putts made</h3><span class="board-chip" id="board-mode">This device</span></div>
+          <ol id="board"></ol>
+          <p class="board-note" id="board-note">Putts are saved on this device.</p>
+        </aside>
+      </div>
+    </div>
+  </section>
 </main>
 
 <footer>
@@ -536,6 +602,216 @@ panel.addEventListener("click", e => {
 let savedTheme = "scoreboard";
 try { savedTheme = localStorage.getItem(LOOK_KEY) || "scoreboard"; } catch (e) {}
 applyTheme(savedTheme);
+
+// --- Putting contest (same game as the BBBO site) ---
+const PLAYERS = { brett: "Brett", nish: "Nish", moo: "Moo", zoeeh: "ZOeeh", dnice: "D-Nice", cj: "CJ", louis: "Louis",
+  reece: "Reece", kez: "Kez", odub: "ODub", willsy: "Willsy", teesh: "Teesh", skilly: "Skilly" };
+const canvas = document.getElementById("green"), ctx = canvas.getContext("2d");
+const W = 900, H = 540, BALL_R = 8, CUP_R = 15;
+const FRICTION = 300;            // rolling resistance, px/s²
+const MAX_PULL = 230, MAX_SPEED = 1050, CAPTURE_SPEED = 430;
+let ball, cup, brk, puttsThisHole = 0, holeNo = 1, moving = false, holed = false, lipped = false, aim = null, putter = "";
+
+const fit = () => { const dpr = Math.min(window.devicePixelRatio || 1, 2); canvas.width = W * dpr; canvas.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); };
+const rand = (a, b) => a + Math.random() * (b - a);
+function newHole() {
+  cup = { x: rand(W * .58, W * .9), y: rand(H * .22, H * .85) };
+  ball = { x: rand(W * .08, W * .3), y: rand(H * .22, H * .85), vx: 0, vy: 0 };
+  const a = rand(0, Math.PI * 2), m = Math.random() < .2 ? 0 : rand(25, 85);
+  brk = { x: Math.cos(a) * m, y: Math.sin(a) * m, m };
+  puttsThisHole = 0; holed = false; moving = false; aim = null;
+  hud();
+}
+function hud() {
+  document.getElementById("hud-hole").textContent = `Hole ${holeNo}`;
+  document.getElementById("hud-break").textContent = `Break: ${brk.m === 0 ? "straight" : brk.m < 45 ? "gentle" : brk.m < 70 ? "medium" : "big"}`;
+  document.getElementById("hud-putts").textContent = `Putts this hole: ${puttsThisHole}`;
+}
+const msgEl = document.getElementById("green-msg");
+const say = html => { msgEl.innerHTML = html; };
+const promptPick = () => {
+  say("");
+  document.getElementById("pick-overlay").hidden = !!putter;
+  document.getElementById("putter-name").textContent = putter ? PLAYERS[putter] : "nobody yet";
+};
+
+function toGreen(e) {
+  const r = canvas.getBoundingClientRect();
+  return { x: (e.clientX - r.left) / r.width * W, y: (e.clientY - r.top) / r.height * H };
+}
+canvas.addEventListener("pointerdown", e => {
+  if (!putter || moving || holed) return;
+  canvas.setPointerCapture(e.pointerId);
+  const pt = toGreen(e);
+  aim = { sx: pt.x, sy: pt.y, x: pt.x, y: pt.y };
+});
+canvas.addEventListener("pointermove", e => { if (aim) { const pt = toGreen(e); aim.x = pt.x; aim.y = pt.y; } });
+canvas.addEventListener("pointerup", () => {
+  if (!aim) return;
+  const dx = aim.sx - aim.x, dy = aim.sy - aim.y, pull = Math.min(Math.hypot(dx, dy), MAX_PULL);
+  aim = null;
+  if (pull < 6) return;
+  const sp = pull / MAX_PULL * MAX_SPEED, len = Math.hypot(dx, dy);
+  ball.vx = dx / len * sp; ball.vy = dy / len * sp;
+  moving = true; lipped = false; puttsThisHole++; hud();
+});
+canvas.addEventListener("pointercancel", () => { aim = null; });
+
+function step(dt) {
+  if (!moving) return;
+  ball.vx += brk.x * dt; ball.vy += brk.y * dt;
+  let sp = Math.hypot(ball.vx, ball.vy);
+  const drop = FRICTION * dt;
+  if (sp <= drop) { ball.vx = ball.vy = 0; sp = 0; }
+  else { ball.vx *= (sp - drop) / sp; ball.vy *= (sp - drop) / sp; sp -= drop; }
+  ball.x += ball.vx * dt; ball.y += ball.vy * dt;
+  if (ball.x < BALL_R + 6) { ball.x = BALL_R + 6; ball.vx = Math.abs(ball.vx) * .5; }
+  if (ball.x > W - BALL_R - 6) { ball.x = W - BALL_R - 6; ball.vx = -Math.abs(ball.vx) * .5; }
+  if (ball.y < BALL_R + 6) { ball.y = BALL_R + 6; ball.vy = Math.abs(ball.vy) * .5; }
+  if (ball.y > H - BALL_R - 6) { ball.y = H - BALL_R - 6; ball.vy = -Math.abs(ball.vy) * .5; }
+  const d = Math.hypot(ball.x - cup.x, ball.y - cup.y);
+  if (d < CUP_R && sp < CAPTURE_SPEED) { moving = false; holed = true; finishPutt(true); return; }
+  if (d < CUP_R && !lipped) {      // too hot: lips out
+    lipped = true;
+    const turn = rand(-.6, .6), c = Math.cos(turn), s2 = Math.sin(turn);
+    [ball.vx, ball.vy] = [(ball.vx * c - ball.vy * s2) * .75, (ball.vx * s2 + ball.vy * c) * .75];
+  }
+  if (d > CUP_R * 1.5) lipped = false;
+  if (sp < 6) { ball.vx = ball.vy = 0; moving = false; finishPutt(false); }
+}
+
+function finishPutt(inTheHole) {
+  record(putter, inTheHole);
+  if (!inTheHole) return;
+  const n = puttsThisHole, who = PLAYERS[putter];
+  const line = n === 1 ? (putter === "brett" ? "The stag drains it!" : "Drained it!") : n === 2 ? "Two-putt. Tidy." : n === 3 ? "Three-putt. Classic." : `${n} putts. Embarrassing.`;
+  say(`${line}<small>${who} · hole ${holeNo}</small>`);
+  setTimeout(() => { holeNo++; newHole(); promptPick(); }, 1600);
+}
+
+function draw() {
+  for (let i = 0; i < 12; i++) { ctx.fillStyle = i % 2 ? "#468f4c" : "#3f8a45"; ctx.fillRect(i * W / 12, 0, W / 12 + 1, H); }
+  ctx.strokeStyle = "#2c6a32"; ctx.lineWidth = 12; ctx.strokeRect(0, 0, W, H);
+  // break arrow, bottom left
+  if (brk.m > 0) {
+    const cx = 44, cy = H - 44, a = Math.atan2(brk.y, brk.x), L = 10 + brk.m / 85 * 18;
+    ctx.fillStyle = "rgba(0,0,0,.18)"; ctx.beginPath(); ctx.arc(cx, cy, 28, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = "#fff"; ctx.lineWidth = 3; ctx.beginPath();
+    ctx.moveTo(cx - Math.cos(a) * L, cy - Math.sin(a) * L); ctx.lineTo(cx + Math.cos(a) * L, cy + Math.sin(a) * L); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx + Math.cos(a) * L, cy + Math.sin(a) * L);
+    ctx.lineTo(cx + Math.cos(a + 2.6) * 9 + Math.cos(a) * L, cy + Math.sin(a + 2.6) * 9 + Math.sin(a) * L);
+    ctx.moveTo(cx + Math.cos(a) * L, cy + Math.sin(a) * L);
+    ctx.lineTo(cx + Math.cos(a - 2.6) * 9 + Math.cos(a) * L, cy + Math.sin(a - 2.6) * 9 + Math.sin(a) * L); ctx.stroke();
+  }
+  // cup and flag (flag in the site's accent colour)
+  ctx.fillStyle = "rgba(0,0,0,.18)"; ctx.beginPath(); ctx.arc(cup.x, cup.y, CUP_R + 5, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "#0b120d"; ctx.beginPath(); ctx.arc(cup.x, cup.y, CUP_R, 0, Math.PI * 2); ctx.fill();
+  if (!holed) {
+    ctx.strokeStyle = "#f2f2ea"; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(cup.x, cup.y); ctx.lineTo(cup.x, cup.y - 78); ctx.stroke();
+    ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue("--gold").trim() || "#e0a526";
+    ctx.beginPath(); ctx.moveTo(cup.x, cup.y - 78); ctx.lineTo(cup.x + 34, cup.y - 68); ctx.lineTo(cup.x, cup.y - 58); ctx.fill();
+  }
+  // aim guide
+  if (aim) {
+    const dx = aim.sx - aim.x, dy = aim.sy - aim.y, len = Math.hypot(dx, dy);
+    if (len > 3) {
+      const pow = Math.min(len, MAX_PULL) / MAX_PULL, ux = dx / len, uy = dy / len;
+      ctx.setLineDash([8, 8]); ctx.lineWidth = 3;
+      ctx.strokeStyle = `hsl(${120 - pow * 120} 90% 60%)`;
+      ctx.beginPath(); ctx.moveTo(ball.x, ball.y); ctx.lineTo(ball.x + ux * (30 + pow * 220), ball.y + uy * (30 + pow * 220)); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = "rgba(0,0,0,.35)"; ctx.fillRect(ball.x - 30, ball.y + 18, 60, 7);
+      ctx.fillStyle = `hsl(${120 - pow * 120} 90% 55%)`; ctx.fillRect(ball.x - 30, ball.y + 18, 60 * pow, 7);
+    }
+  }
+  // ball
+  if (!holed) {
+    ctx.fillStyle = "rgba(0,0,0,.28)"; ctx.beginPath(); ctx.ellipse(ball.x + 3, ball.y + 4, BALL_R, BALL_R * .8, 0, 0, Math.PI * 2); ctx.fill();
+    const g = ctx.createRadialGradient(ball.x - 3, ball.y - 3, 1, ball.x, ball.y, BALL_R);
+    g.addColorStop(0, "#ffffff"); g.addColorStop(1, "#d9ddd8");
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(ball.x, ball.y, BALL_R, 0, Math.PI * 2); ctx.fill();
+  }
+}
+let last = performance.now();
+function loop(now) {
+  const dt = Math.min((now - last) / 1000, 1 / 30); last = now;
+  for (let i = 0; i < 4; i++) step(dt / 4);
+  draw();
+  requestAnimationFrame(loop);
+}
+
+// Tally: this viewer's own counts per player ({made, putts}); the board adds up everyone's.
+const clampN = v => Math.max(0, Math.min(1e6, Math.floor(Number(v) || 0)));
+const cleanTally = obj => {
+  const out = {};
+  if (obj && typeof obj === "object") Object.keys(PLAYERS).forEach(id => { const r = obj[id]; if (r) out[id] = { made: clampN(r.made), putts: clampN(r.putts) }; });
+  return out;
+};
+let tally = {}, board = null, mode = "device", myDoc = null, writing = false, again = false;
+try { tally = cleanTally(JSON.parse(localStorage.getItem("stag-putts") || "{}")); } catch (e) {}
+function record(id, made) {
+  const r = tally[id] || (tally[id] = { made: 0, putts: 0 });
+  r.putts++; if (made) r.made++;
+  if (mode === "shared") save(); else { try { localStorage.setItem("stag-putts", JSON.stringify(tally)); } catch (e) {} }
+  renderBoard();
+}
+async function save() {
+  if (writing) { again = true; return; }
+  writing = true;
+  try { await myDoc.set({ byPlayer: tally, updatedAt: Date.now() }); }
+  catch (e) {
+    if (e && (e.code === "invalid_argument" || e.code === "revoked" || e.code === "not_granted")) setMode("view");
+  }
+  writing = false;
+  if (again && mode === "shared") { again = false; save(); }
+}
+function setMode(m) {
+  mode = m;
+  const chip = document.getElementById("board-mode"), note = document.getElementById("board-note");
+  if (m === "shared") { chip.textContent = "Live"; note.textContent = "Everyone's putts, live. Yours are added as you play."; }
+  else if (m === "view") { chip.textContent = "Live"; note.textContent = "You're watching the live board. Your own putts are kept on this device and aren't added to it."; }
+  else { chip.textContent = "This device"; note.textContent = "Putts are saved on this device."; }
+  renderBoard();
+}
+function renderBoard() {
+  const totals = {};
+  Object.keys(PLAYERS).forEach(id => totals[id] = { made: 0, putts: 0 });
+  const add = t => Object.keys(t).forEach(id => { totals[id].made += t[id].made; totals[id].putts += t[id].putts; });
+  if (board && mode !== "device") board.forEach(add); else add(tally);
+  const rows = Object.keys(PLAYERS).sort((a, b) => totals[b].made - totals[a].made || totals[a].putts - totals[b].putts || PLAYERS[a].localeCompare(PLAYERS[b]));
+  document.getElementById("board").innerHTML = rows.map((id, i) => `<li class="${id === putter ? "me" : ""}"><span class="rk">${i + 1}</span><span class="nm">${PLAYERS[id]}</span><span class="ct"><b>${totals[id].made}</b>in ${totals[id].putts}</span></li>`).join("");
+}
+
+const pick = document.getElementById("putter");
+pick.innerHTML = `<option value="">Pick your name</option>` + Object.keys(PLAYERS).sort((a, b) => PLAYERS[a].localeCompare(PLAYERS[b])).map(id => `<option value="${id}">${PLAYERS[id]}</option>`).join("");
+try { const saved = localStorage.getItem("stag-putter"); if (saved && PLAYERS[saved]) putter = saved; } catch (e) {}
+pick.value = putter;
+pick.addEventListener("change", () => { putter = pick.value; try { localStorage.setItem("stag-putter", putter); } catch (e) {} promptPick(); renderBoard(); });
+document.getElementById("change-putter").addEventListener("click", () => { document.getElementById("pick-overlay").hidden = false; pick.value = ""; pick.focus(); });
+document.getElementById("new-hole").addEventListener("click", () => { if (moving) return; holeNo++; newHole(); promptPick(); });
+
+fit(); newHole(); promptPick(); renderBoard(); requestAnimationFrame(loop);
+
+// Shared board, where the viewer's access allows it (claude.ai only; the GitHub site keeps putts on each device).
+(async () => {
+  const cl = window.claude;
+  if (!cl || typeof cl.use !== "function") return;
+  const [db, user] = await Promise.all([cl.use("db"), cl.use("user")]);
+  if (!db) return;
+  db.collection("putts").onSnapshot(snap => {
+    board = snap.docs.map(d => cleanTally((d.data() || {}).byPlayer));
+    if (mode === "device") setMode("view"); else renderBoard();
+  }, () => { board = null; setMode("device"); });
+  const uid = user ? await user.id() : null;
+  const canWrite = user ? await user.can("data.write") : null;
+  if (!uid || canWrite === false) return;
+  myDoc = db.doc("putts/" + uid);
+  try {
+    const snap = await myDoc.get();
+    tally = snap.exists ? cleanTally((snap.data() || {}).byPlayer) : {};
+    setMode("shared");
+  } catch (e) { myDoc = null; }
+})();
 </script>
 </body>
 </html>
